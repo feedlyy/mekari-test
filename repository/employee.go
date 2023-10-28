@@ -121,9 +121,44 @@ func (e *employeeRepository) Store(ctx context.Context, employee domain.Employee
 	return nil
 }
 
-func (e *employeeRepository) Update(ctx context.Context, id int) error {
-	//TODO implement me
-	panic("implement me")
+func (e *employeeRepository) Update(ctx context.Context, employee domain.Employee) error {
+	var (
+		err    error
+		sql    string
+		result sqlDb.Result
+		rows   int64
+	)
+	sql, _, err = sq.Update("employees").
+		Set("first_name", employee.FirstName).
+		Set("last_name", employee.LastName).
+		Set("email", employee.Email).
+		Set("hire_date", employee.HireDate).
+		Where(sq.Eq{"id": "id"}).PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		logrus.Errorf("Employees - Repository|err when generate sql, err:%v", err)
+		return err
+	}
+
+	result, err = e.db.ExecContext(ctx, sql, employee.FirstName, employee.LastName,
+		employee.Email, employee.HireDate, employee.Id)
+	if err != nil {
+		logrus.Errorf("Employees - Repository|err when update data, err:%v", err)
+		return err
+	}
+
+	rows, err = result.RowsAffected()
+	if err != nil {
+		logrus.Errorf("Employees - Repository|err when get affected rows data, err:%v", err)
+		return err
+	}
+
+	if rows == 0 {
+		err = sqlDb.ErrNoRows
+		logrus.Errorf("Employees - Repository|err when delete data, err:%v", err)
+		return err
+	}
+
+	return nil
 }
 
 func (e *employeeRepository) Delete(ctx context.Context, id int) error {

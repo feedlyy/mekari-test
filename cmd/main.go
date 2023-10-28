@@ -77,6 +77,7 @@ func main() {
 	handler.GET("/employees", employeeHandler.GetAllEmployee)
 	handler.GET("/employees/:id", employeeHandler.GetEmployeeById)
 	handler.POST("/employees", employeeHandler.Register)
+	handler.PUT("/employees/:id", employeeHandler.Update)
 	handler.DELETE("/employees/:id", employeeHandler.Delete)
 
 	logrus.Infof("Server run on localhost%v", serverPort)

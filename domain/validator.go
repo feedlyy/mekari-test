@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-func isValidEmail(email string) bool {
+func IsValidEmail(email string) bool {
 	// Define the regular expression pattern for a valid email address
 	emailPattern := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 
@@ -33,7 +33,7 @@ func (e *Employee) Validate(args ...interface{}) error {
 		return err
 	}
 
-	if !isValidEmail(e.Email) {
+	if !IsValidEmail(e.Email) {
 		return errors.New("please input valid email")
 	}
 
