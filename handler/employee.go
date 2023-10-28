@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"github.com/julienschmidt/httprouter"
 	"mekari-test/domain"
 	"mekari-test/helpers"
@@ -14,8 +13,6 @@ import (
 	"strconv"
 	"time"
 )
-
-var validate *validator.Validate
 
 type EmployeeHandler struct {
 	employeeService domain.EmployeeService
