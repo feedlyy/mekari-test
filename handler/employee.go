@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/julienschmidt/httprouter"
 	"mekari-test/domain"
 	"mekari-test/helpers"
@@ -12,6 +14,8 @@ import (
 	"strconv"
 	"time"
 )
+
+var validate *validator.Validate
 
 type EmployeeHandler struct {
 	employeeService domain.EmployeeService
@@ -102,6 +106,66 @@ func (e *EmployeeHandler) GetEmployeeById(w http.ResponseWriter, r *http.Request
 	}
 
 	resp.Data = employee
+	json.NewEncoder(w).Encode(resp)
+	return
+}
+
+func (e *EmployeeHandler) Register(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var (
+		err      error
+		employee = domain.Employee{
+			FirstName: r.PostFormValue("first_name"),
+			LastName:  r.PostFormValue("last_name"),
+			Email:     r.PostFormValue("email"),
+		}
+		hireDate = r.PostFormValue("hire_date")
+		resp     = helpers.Response{
+			Status: helpers.SuccessMsg,
+			Data:   nil,
+		}
+		date time.Time
+	)
+	w.Header().Set("Content-Type", "application/json")
+
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	defer cancel()
+
+	// validate request
+	err = employee.Validate(hireDate)
+	if err != nil {
+		resp.Status = helpers.FailMsg
+		resp.Data = err.Error()
+
+		// Serialize the error response to JSON and send it back to the client
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+
+	date, err = time.Parse("2006-01-02", hireDate)
+	if err != nil {
+		resp.Status = helpers.FailMsg
+		errMsg := fmt.Sprintf("invalid parsing date, err:%v", err.Error())
+		resp.Data = errMsg
+
+		// Serialize the error response to JSON and send it back to the client
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+	employee.HireDate = date
+
+	err = e.employeeService.Register(ctx, employee)
+	if err != nil {
+		resp.Status = helpers.FailMsg
+		resp.Data = err.Error()
+
+		// Serialize the error response to JSON and send it back to the client
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+
 	json.NewEncoder(w).Encode(resp)
 	return
 }

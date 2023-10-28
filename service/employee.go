@@ -21,9 +21,8 @@ func (e employeeService) GetById(ctx context.Context, id int) (domain.Employee, 
 	return e.employeeRepo.GetById(ctx, id)
 }
 
-func (e employeeService) Register(ctx context.Context, id int) error {
-	//TODO implement me
-	panic("implement me")
+func (e employeeService) Register(ctx context.Context, employee domain.Employee) error {
+	return e.employeeRepo.Store(ctx, employee)
 }
 
 func (e employeeService) Update(ctx context.Context, id int) error {

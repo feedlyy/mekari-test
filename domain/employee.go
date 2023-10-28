@@ -24,7 +24,7 @@ type EmployeeRepository interface {
 type EmployeeService interface {
 	GetAllEmployee(ctx context.Context) ([]Employee, error)
 	GetById(ctx context.Context, id int) (Employee, error)
-	Register(ctx context.Context, id int) error
+	Register(ctx context.Context, employee Employee) error
 	Update(ctx context.Context, id int) error
 	Delete(ctx context.Context, id int) error
 }

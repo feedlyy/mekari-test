@@ -99,8 +99,26 @@ func (e *employeeRepository) GetById(ctx context.Context, id int) (domain.Employ
 }
 
 func (e *employeeRepository) Store(ctx context.Context, employee domain.Employee) error {
-	//TODO implement me
-	panic("implement me")
+	var (
+		err error
+		sql string
+	)
+	sql, _, err = sq.Insert("employees").Columns("first_name", "last_name",
+		"email", "hire_date").
+		Values("first_name", "last_name", "email", "hire_date").PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		logrus.Errorf("Employees - Repository|err when generate sql, err:%v", err)
+		return err
+	}
+
+	_, err = e.db.ExecContext(ctx, sql, employee.FirstName, employee.LastName, employee.Email,
+		employee.HireDate)
+	if err != nil {
+		logrus.Errorf("Employees - Repository|err when store data, err:%v", err)
+		return err
+	}
+
+	return nil
 }
 
 func (e *employeeRepository) Update(ctx context.Context, id int) error {
