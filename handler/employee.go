@@ -166,3 +166,50 @@ func (e *EmployeeHandler) Register(w http.ResponseWriter, r *http.Request, ps ht
 	json.NewEncoder(w).Encode(resp)
 	return
 }
+
+func (e *EmployeeHandler) Delete(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var (
+		err  error
+		id   int
+		resp = helpers.Response{
+			Status: helpers.SuccessMsg,
+			Data:   nil,
+		}
+	)
+	w.Header().Set("Content-Type", "application/json")
+
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
+	defer cancel()
+
+	id, err = strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		resp.Status = helpers.FailMsg
+		resp.Data = err.Error()
+
+		// Serialize the error response to JSON and send it back to the client
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+
+	err = e.employeeService.Delete(ctx, id)
+	if err != nil {
+		resp.Status = helpers.FailMsg
+		resp.Data = err.Error()
+
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(resp)
+			return
+		default:
+			// Serialize the error response to JSON and send it back to the client
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(resp)
+			return
+		}
+	}
+
+	json.NewEncoder(w).Encode(resp)
+	return
+}

@@ -31,6 +31,5 @@ func (e employeeService) Update(ctx context.Context, id int) error {
 }
 
 func (e employeeService) Delete(ctx context.Context, id int) error {
-	//TODO implement me
-	panic("implement me")
+	return e.employeeRepo.Delete(ctx, id)
 }

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	sql2 "database/sql"
+	sqlDb "database/sql"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -85,12 +85,12 @@ func (e *employeeRepository) GetById(ctx context.Context, id int) (domain.Employ
 	row = stmt.QueryRowxContext(ctx, id)
 	err = row.Scan(&res.Id, &res.FirstName, &res.LastName,
 		&res.Email, &res.HireDate)
-	if err != nil && err != sql2.ErrNoRows {
+	if err != nil && err != sqlDb.ErrNoRows {
 		logrus.Errorf("Employee - Repository|err when scan, err:%v", err)
 		return domain.Employee{}, err
 	}
 
-	if err == sql2.ErrNoRows {
+	if err == sqlDb.ErrNoRows {
 		logrus.Errorf("Employee - Repository|data not found, err:%v", err)
 		return domain.Employee{}, err
 	}
@@ -127,6 +127,37 @@ func (e *employeeRepository) Update(ctx context.Context, id int) error {
 }
 
 func (e *employeeRepository) Delete(ctx context.Context, id int) error {
-	//TODO implement me
-	panic("implement me")
+	var (
+		err    error
+		sql    string
+		result sqlDb.Result
+		rows   int64
+	)
+	sql, _, err = sq.Delete("employees").Where(sq.And{
+		sq.Eq{"id": "id"},
+	}).PlaceholderFormat(sq.Dollar).ToSql()
+	if err != nil {
+		logrus.Errorf("Employees - Repository|err when generate sql, err:%v", err)
+		return err
+	}
+
+	result, err = e.db.ExecContext(ctx, sql, id)
+	if err != nil {
+		logrus.Errorf("Employees - Repository|err when delete data, err:%v", err)
+		return err
+	}
+
+	rows, err = result.RowsAffected()
+	if err != nil {
+		logrus.Errorf("Employees - Repository|err when get affected rows data, err:%v", err)
+		return err
+	}
+
+	if rows == 0 {
+		err = sqlDb.ErrNoRows
+		logrus.Errorf("Employees - Repository|err when delete data, err:%v", err)
+		return err
+	}
+
+	return nil
 }
