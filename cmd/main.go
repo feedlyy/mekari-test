@@ -75,6 +75,7 @@ func main() {
 	serverPort := viper.GetString(`server.address`)
 	handler := httprouter.New()
 	handler.GET("/employees", employeeHandler.GetAllEmployee)
+	handler.GET("/employees/:id", employeeHandler.GetEmployeeById)
 
 	logrus.Infof("Server run on localhost%v", serverPort)
 	log.Fatal(http.ListenAndServe(serverPort, handler))

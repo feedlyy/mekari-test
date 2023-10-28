@@ -18,8 +18,7 @@ func (e employeeService) GetAllEmployee(ctx context.Context) ([]domain.Employee,
 }
 
 func (e employeeService) GetById(ctx context.Context, id int) (domain.Employee, error) {
-	//TODO implement me
-	panic("implement me")
+	return e.employeeRepo.GetById(ctx, id)
 }
 
 func (e employeeService) Register(ctx context.Context, id int) error {
