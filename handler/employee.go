@@ -163,6 +163,7 @@ func (e *EmployeeHandler) Register(w http.ResponseWriter, r *http.Request, ps ht
 		return
 	}
 
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(resp)
 	return
 }
