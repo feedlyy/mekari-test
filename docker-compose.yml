@@ -1,0 +1,23 @@
+version: '3'
+services:
+  my-postgres:
+    container_name: my-postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD:
+      POSTGRES_DB: mekari
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    restart: always
+
+  go-app:
+    build:
+      context: . # The directory where your Go application code is located
+      dockerfile: Dockerfile # Dockerfile for your Go application
+    ports:
+      - "8080:8080"
+    command: dockerize -wait tcp://my-postgres:5432 -timeout 60s /main
+    depends_on:
+      - my-postgres

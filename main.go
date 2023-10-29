@@ -21,10 +21,13 @@ import (
 var migrations embed.FS
 
 func init() {
-	viper.SetConfigFile(`../config/config.json`)
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(err)
+	viper.SetConfigName("config")
+	viper.SetConfigType("json")
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {             // Handle errors reading the config file
+		logrus.Errorf(err.Error())
 	}
 
 	if viper.GetBool(`debug`) {
