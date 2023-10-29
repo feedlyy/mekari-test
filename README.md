@@ -8,7 +8,18 @@ Because this application and its database are already containerized using Docker
 make run
 ```
 <p align="justify">
-This command will handle all the necessary steps to start the application and its database in their respective containers. Make sure you have Docker installed and running on your system, as it is the only requirement to run this application.
+This command will handle all the necessary steps to start the application and its database in their respective containers. 
+
+
+Server will run on port:
+```azure
+localhost:8080
+```
+<p align="justify">
+Please refer to section <i><b>API Documentation</b></i> for more information about the endpoints.
+
+<p align="justify">
+Make sure you also have <i><b>Docker installed</b></i> and running on your system, as it is the only requirement to run this application.
 
 ## Project Structure
 <p align="justify">
