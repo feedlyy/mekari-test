@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  title: Employee API
+  version: 1.0.0
+paths:
+  /employees:
+    get:
+      summary: Get a list of all employees
+      responses:
+        '200':
+          description: A list of employees
+  /employees/{id}:
+    get:
+      summary: Get an employee by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The employee's ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: An employee record
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+  /employees:
+    post:
+      summary: Register employee
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  description: The employee's first name
+                last_name:
+                  type: string
+                  description: The employee's last name
+                email:
+                  type: string
+                  format: email
+                  description: The employee's email address
+                hire_date:
+                  type: string
+                  format: date
+                  description: The employee's hire date (yyyy-mm-dd format)
+      responses:
+        '201':
+          description: Created employee
+        '400':
+          description: Bad request, can be missing required parameters or invalid format
+        '500':
+          description: Internal server error
+  /employees/{id}:
+    delete:
+      summary: Delete an Employee by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The employee's ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Deleted employee
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+  /employees/{id}:
+    put:
+      summary: Update an employee by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The employee's ID
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  description: The employee's first name
+                last_name:
+                  type: string
+                  description: The employee's last name
+                email:
+                  type: string
+                  format: email
+                  description: The employee's email address
+                hire_date:
+                  type: string
+                  format: date
+                  description: The employee's hire date (yyyy-mm-dd format)
+      responses:
+        '201':
+          description: Updated employee
+        '404':
+          description: Employee ID not found
+        '500':
+          description: Internal server error
+
